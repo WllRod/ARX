@@ -243,37 +243,39 @@ class Login_Screen(QMainWindow):
     
     def close_actual_window(self):
         self.close()
+try:
+    cont = 0
+    for p in psutil.process_iter():
+        if(p.name() == os.path.basename(sys.argv[0]) or p.name() == "updater.exe"):
+            cont += 1
+
+    print(cont)
+
+
+    if(cont > 2):
+        App = QApplication(sys.argv)
+        message = QMessageBox()
+        message.setWindowTitle('ERROR')
+        message.setIcon(QMessageBox.Critical)
+        message.setText("Software ja esta em execução, por favor aguarde!")
+        message.exec_()
+        sys.exit(0)
         
-cont = 0
-for p in psutil.process_iter():
-    if(p.name() == os.path.basename(sys.argv[0]) or p.name() == "updater.exe"):
-        cont += 1
-
-print(cont)
-
-
-if(cont > 2):
-    App = QApplication(sys.argv)
-    message = QMessageBox()
-    message.setWindowTitle('ERROR')
-    message.setIcon(QMessageBox.Critical)
-    message.setText("Software ja esta em execução, por favor aguarde!")
-    message.exec_()
-    sys.exit(0)
-    
-if(os.path.exists('open')):
-    os.remove('open')
-    App = QApplication(sys.argv)
-    window = Login_Screen()
-    App.exec_()
-else:
-    arq = open('open', 'w')
-    arq.close()
-    path    = os.path.dirname(sys.argv[0])
-    cmd     = '"{}\\updater.exe" --open_main True'.format(path)
-    proc    = Popen(cmd, creationflags=CREATE_NEW_CONSOLE)
-    #proc    = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
-    #out     = str(proc.stdout.read())
-    #print(out)
-    time.sleep(2)
-    sys.exit(0)
+    if(os.path.exists('open')):
+        os.remove('open')
+        App = QApplication(sys.argv)
+        window = Login_Screen()
+        App.exec_()
+    else:
+        arq = open('open', 'w')
+        arq.close()
+        path    = os.path.dirname(sys.argv[0])
+        cmd     = '"{}\\updater.exe" --open_main True'.format(path)
+        proc    = Popen(cmd, creationflags=CREATE_NEW_CONSOLE)
+        #proc    = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
+        #out     = str(proc.stdout.read())
+        #print(out)
+        time.sleep(2)
+        sys.exit(0)
+except Exception as e:
+    print('AQUI')

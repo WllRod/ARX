@@ -163,12 +163,14 @@ class MainWindow(QMainWindow):
 
 def main_teste(list):
 
-    #print('TESTE')
-    app = QApplication(sys.argv)
-    window  = MainWindow(list)
-    #window.ui.showMaximized()
-    sys.exit(app.exec_())
-
+    try:
+        #print('TESTE')
+        app = QApplication(sys.argv)
+        window  = MainWindow(list)
+        #window.ui.showMaximized()
+        sys.exit(app.exec_())
+    except Exception as e:
+        print('AQUI')
 #main_teste()
 #main_teste()
 '''if __name__ == "__main__":

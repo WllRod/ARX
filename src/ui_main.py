@@ -5,7 +5,7 @@ from PyQt5.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QRadialGradient, QPixmap)
 from PyQt5.QtWidgets import *
 from PyQt5 import sip, QtCore
-import sys
+import sys, os
 import threading
 from DB_Connect.SQL import DB_Alter, DB_Login, SQL_Funcionario, Funcoes
 from Layouts.frame import Frame
@@ -49,7 +49,15 @@ class SplashScreen(QWidget):
         self.splashScreen.show()
 
         QTimer.singleShot(5000, self.splashScreen.close)
-        
+
+class Error_Box():
+    def __init__(self, texto):
+        message = QMessageBox()
+        message.setIcon(QMessageBox.Critical)
+        message.setText(texto)
+        message.setWindowTitle("ERROR")
+        QApplication.restoreOverrideCursor()
+        message.exec_()        
 class Ui_MainWindow(QMainWindow):
 
     def __init__(self, users, funcs, cargos, obras, folha, folhas_list, clientes_list, despesas_list):
@@ -653,6 +661,7 @@ class Ui_MainWindow(QMainWindow):
             QMetaObject.connectSlotsByName(self)
             #self.loading.close()
         except Exception as e:
+            
             ErrorMessage(str(e)).message.exec_()
 
     def change_buttons_color(self):
@@ -951,219 +960,252 @@ class Ui_MainWindow(QMainWindow):
         self.password   = text
     
     def click(self):
-        q   = queue.Queue()
-        t1  = threading.Thread(target=self.sql.add_user, args=(self.user, self.name, self.password, self.comboBox.currentIndex(), q, ))
-        t3  = threading.Thread(target=self.close())
-        t3.start()
-        
-        t1.start()
-        t1.join()
-        t3.join()
-        for i in reversed(range(self.verticalLayout_8.count())):
-                self.verticalLayout_8.itemAt(i).widget().setParent(None)
-        self.users_list = Window(q.get())
-        self.verticalLayout_8.addWidget(self.users_list)
-        self.verticalLayout_8.update()
-        
-        self.sql                = DB_Alter()
+        try:
+            q   = queue.Queue()
+            t1  = threading.Thread(target=self.sql.add_user, args=(self.user, self.name, self.password, self.comboBox.currentIndex(), q, ))
+            t3  = threading.Thread(target=self.close())
+            t3.start()
+            
+            t1.start()
+            t1.join()
+            t3.join()
+            for i in reversed(range(self.verticalLayout_8.count())):
+                    self.verticalLayout_8.itemAt(i).widget().setParent(None)
+            self.users_list = Window(q.get())
+            self.verticalLayout_8.addWidget(self.users_list)
+            self.verticalLayout_8.update()
+            
+            self.sql                = DB_Alter()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
         
     def close(self):
         self.dlg.close()
 
     def btn_page_3_onClick(self):
 
-        self.change_buttons_color()
-        self.btn_page_3.setStyleSheet(u"QPushButton {\n"
-    "	color: rgb(255, 255, 255);\n"
-    "	background-color: rgb(85, 170, 255);\n"
-    "	border: 0px solid;\n"
-    "}\n"
-    "QPushButton:hover {\n"
-    "	background-color: rgb(85, 170, 255);\n"
-    "}")
-        self.add_user_btn.show()
-        self.edit_user_btn.show()
-        self.del_user_btn.show()
-        self.crud_buttons_teste.add_user_btn.hide()
-        self.crud_buttons.add_user_btn.hide()
-        self.crud_buttons.edit_user_btn.hide()
-        self.crud_buttons.del_user_btn.hide()
+        try:
+            self.change_buttons_color()
+            self.btn_page_3.setStyleSheet(u"QPushButton {\n"
+        "	color: rgb(255, 255, 255);\n"
+        "	background-color: rgb(85, 170, 255);\n"
+        "	border: 0px solid;\n"
+        "}\n"
+        "QPushButton:hover {\n"
+        "	background-color: rgb(85, 170, 255);\n"
+        "}")
+            self.add_user_btn.show()
+            self.edit_user_btn.show()
+            self.del_user_btn.show()
+            self.crud_buttons_teste.add_user_btn.hide()
+            self.crud_buttons.add_user_btn.hide()
+            self.crud_buttons.edit_user_btn.hide()
+            self.crud_buttons.del_user_btn.hide()
 
-        self.crud_buttons_3.add_user_btn.hide()
-        self.crud_buttons_3.edit_user_btn.hide()
-        self.crud_buttons_3.del_user_btn.hide()
+            self.crud_buttons_3.add_user_btn.hide()
+            self.crud_buttons_3.edit_user_btn.hide()
+            self.crud_buttons_3.del_user_btn.hide()
 
-        self.crud_buttons_2.add_user_btn.hide()
-        self.crud_buttons_2.edit_user_btn.hide()
-        self.crud_buttons_2.del_user_btn.hide()
+            self.crud_buttons_2.add_user_btn.hide()
+            self.crud_buttons_2.edit_user_btn.hide()
+            self.crud_buttons_2.del_user_btn.hide()
 
-        self.crud_buttons_5.add_user_btn.hide()
-        self.crud_buttons_5.edit_user_btn.hide()
-        self.crud_buttons_5.del_user_btn.hide()
+            self.crud_buttons_5.add_user_btn.hide()
+            self.crud_buttons_5.edit_user_btn.hide()
+            self.crud_buttons_5.del_user_btn.hide()
 
-        self.crud_buttons_4.add_user_btn.hide()
-        self.crud_buttons_4.edit_user_btn.hide()
-        self.crud_buttons_4.del_user_btn.hide()
+            self.crud_buttons_4.add_user_btn.hide()
+            self.crud_buttons_4.edit_user_btn.hide()
+            self.crud_buttons_4.del_user_btn.hide()
 
-        self.crud_buttons_6.add_user_btn.hide()
-        self.crud_buttons_6.edit_user_btn.hide()
-        self.crud_buttons_6.del_user_btn.hide()
+            self.crud_buttons_6.add_user_btn.hide()
+            self.crud_buttons_6.edit_user_btn.hide()
+            self.crud_buttons_6.del_user_btn.hide()
 
-        self.crud_buttons_7.add_user_btn.hide()
-        self.crud_buttons_7.edit_user_btn.hide()
-        self.crud_buttons_7.del_user_btn.hide()
-        #self.verticalLayout_8.addWidget(Window(self.users))
-
+            self.crud_buttons_7.add_user_btn.hide()
+            self.crud_buttons_7.edit_user_btn.hide()
+            self.crud_buttons_7.del_user_btn.hide()
+            #self.verticalLayout_8.addWidget(Window(self.users))
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     def add_funcionario(self):
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.add_func   = Window_Add_Func()
+            
+            self.funcoes    = Funcoes()
+            self.sql        = SQL_Funcionario()
+            
+            
+        
+            self.add_func.name_input.textChanged.connect(self.function.handle_name)
+            self.add_func.cpf_input.textChanged.connect(self.function.handle_cpf)
+            self.add_func.RG_input.textChanged.connect(self.function.handle_rg)
+            self.add_func.salario_input.textChanged.connect(self.function.handle_salario_hora)
+            self.add_func.Data_nascimento_input.dateChanged.connect(self.function.handle_data_nascimento)
 
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.add_func   = Window_Add_Func()
-        
-        self.funcoes    = Funcoes()
-        self.sql        = SQL_Funcionario()
-        
-        
-    
-        self.add_func.name_input.textChanged.connect(self.function.handle_name)
-        self.add_func.cpf_input.textChanged.connect(self.function.handle_cpf)
-        self.add_func.RG_input.textChanged.connect(self.function.handle_rg)
-        self.add_func.salario_input.textChanged.connect(self.function.handle_salario_hora)
-        self.add_func.Data_nascimento_input.dateChanged.connect(self.function.handle_data_nascimento)
-
-        funcoes = self.funcoes.return_funcoes()
-        if(funcoes == False):
-            message = QMessageBox()
-            message.setIcon(QMessageBox.Critical)
-            message.setText("É necessário cadastrar um cargo primeiro!")
-            message.setWindowTitle("ERROR")
-            QApplication.restoreOverrideCursor()
-            message.exec_()
-            self.crud_buttons_3.add_user_btn.setChecked(False)
-            self.crud_buttons.add_user_btn.setChecked(False)
-            self.crud_buttons_2.add_user_btn.click()
-        else:
-            
-            for x in self.funcoes.return_funcoes():
-                self.add_func.funcao_input.addItem(x[0])
-            
-            
-            self.function.handle_funcao(self.add_func.funcao_input.currentText(), self.funcoes.return_funcoes())
-            self.add_func.funcao_input.currentTextChanged.connect(lambda: self.function.handle_funcao(
-                self.add_func.funcao_input.currentText(),
-                self.funcoes.return_funcoes()
-            ))
-            
+            funcoes = self.funcoes.return_funcoes()
+            if(funcoes == False):
+                message = QMessageBox()
+                message.setIcon(QMessageBox.Critical)
+                message.setText("É necessário cadastrar um cargo primeiro!")
+                message.setWindowTitle("ERROR")
+                QApplication.restoreOverrideCursor()
+                message.exec_()
+                self.crud_buttons_3.add_user_btn.setChecked(False)
+                self.crud_buttons.add_user_btn.setChecked(False)
+                self.crud_buttons_2.add_user_btn.click()
+            else:
                 
-            self.add_func.Email_input.textChanged.connect(self.function.handle_email)
-            self.add_func.Telefone_input.textChanged.connect(self.function.handle_telefone)
-            self.add_func.Horas_Trab_Dia_input.timeChanged.connect(self.function.handle_horas_trabalhadas)
-            self.add_func.sub_button.clicked.connect(lambda: self.function.add_user_(self.add_func.dlg, self.refresh))
-            QApplication.restoreOverrideCursor()
-            self.add_func.dlg.exec_()
+                for x in self.funcoes.return_funcoes():
+                    self.add_func.funcao_input.addItem(x[0])
+                
+                
+                self.function.handle_funcao(self.add_func.funcao_input.currentText(), self.funcoes.return_funcoes())
+                self.add_func.funcao_input.currentTextChanged.connect(lambda: self.function.handle_funcao(
+                    self.add_func.funcao_input.currentText(),
+                    self.funcoes.return_funcoes()
+                ))
+                
+                    
+                self.add_func.Email_input.textChanged.connect(self.function.handle_email)
+                self.add_func.Telefone_input.textChanged.connect(self.function.handle_telefone)
+                self.add_func.Horas_Trab_Dia_input.timeChanged.connect(self.function.handle_horas_trabalhadas)
+                self.add_func.sub_button.clicked.connect(lambda: self.function.add_user_(self.add_func.dlg, self.refresh))
+                QApplication.restoreOverrideCursor()
+                self.add_func.dlg.exec_()
 
-            #self.refresh()
+                #self.refresh()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     
     def edit_funcionario(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.funcoes    = Funcoes()
-        self.sql_func       = SQL_Funcionario()
-        c   = Confirmation_Screen()
-        if(len(self.func_box.check_box_func()) == 0):
-            
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhum funcionário selecionado para edição!""",
-                onlyText=True
-            )
-        elif(len(self.func_box.check_box_func()) > 1):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Só é permitida a edição de um funcionário!""",
-                onlyText=True
-            )
-        else:
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.funcoes    = Funcoes()
+            self.sql_func       = SQL_Funcionario()
+            c   = Confirmation_Screen()
+            if(len(self.func_box.check_box_func()) == 0):
+                
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhum funcionário selecionado para edição!""",
+                    onlyText=True
+                )
+            elif(len(self.func_box.check_box_func()) > 1):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Só é permitida a edição de um funcionário!""",
+                    onlyText=True
+                )
+            else:
 
-            user_data   = self.sql_func.return_users_data(self.func_box.check_box_func()[0])
-            
-            self.function   = Functions(self.func_box.check_box_func()[0])
-            cargos  = self.funcoes.return_funcoes()
-            edit_func   = Edit_Func(user_data)
-            for x in cargos:
-                if(x[1] == user_data[0][9]):
-                    edit_func.dialog.funcao_input.addItem(str(x[0]))
-            
-            for x in cargos:
-                if(x[1] == user_data[0][9]):
+                user_data   = self.sql_func.return_users_data(self.func_box.check_box_func()[0])
+                
+                self.function   = Functions(self.func_box.check_box_func()[0])
+                cargos  = self.funcoes.return_funcoes()
+                edit_func   = Edit_Func(user_data)
+                for x in cargos:
+                    if(x[1] == user_data[0][9]):
+                        edit_func.dialog.funcao_input.addItem(str(x[0]))
+                
+                for x in cargos:
+                    if(x[1] == user_data[0][9]):
+                        pass
+                    else:
+                        edit_func.dialog.funcao_input.addItem(str(x[0]))
+                
+                edit_func.dialog.name_input.setText(user_data[0][1])
+                edit_func.dialog.name_input.textChanged.connect(self.function.handle_name)
+                edit_func.dialog.cpf_input.setText(user_data[0][2])
+                edit_func.dialog.cpf_input.textChanged.connect(self.function.handle_cpf)
+                edit_func.dialog.RG_input.setText(user_data[0][3])
+                edit_func.dialog.RG_input.textChanged.connect(self.function.handle_rg)
+                
+                #edit_func.dialog.salario_input.setText(user_data[0][4])
+                edit_func.dialog.salario_input.textChanged.connect(self.function.handle_salario_hora)
+
+                try:
+                    data    = datetime.strptime(str(user_data[0][5]), "%Y-%m-%d %H:%M:%S")
+                    qdate   = QDate(int(data.strftime("%Y")), int(data.strftime("%m")), int(data.strftime("%d")))
+                    edit_func.dialog.Data_nascimento_input.setDate(qdate)
+                except Exception as e:
                     pass
-                else:
-                    edit_func.dialog.funcao_input.addItem(str(x[0]))
-            
-            edit_func.dialog.name_input.setText(user_data[0][1])
-            edit_func.dialog.name_input.textChanged.connect(self.function.handle_name)
-            edit_func.dialog.cpf_input.setText(user_data[0][2])
-            edit_func.dialog.cpf_input.textChanged.connect(self.function.handle_cpf)
-            edit_func.dialog.RG_input.setText(user_data[0][3])
-            edit_func.dialog.RG_input.textChanged.connect(self.function.handle_rg)
-            
-            #edit_func.dialog.salario_input.setText(user_data[0][4])
-            edit_func.dialog.salario_input.textChanged.connect(self.function.handle_salario_hora)
+                edit_func.dialog.Data_nascimento_input.dateChanged.connect(self.function.handle_data_nascimento)
 
-            try:
-                data    = datetime.strptime(str(user_data[0][5]), "%Y-%m-%d %H:%M:%S")
-                qdate   = QDate(int(data.strftime("%Y")), int(data.strftime("%m")), int(data.strftime("%d")))
-                edit_func.dialog.Data_nascimento_input.setDate(qdate)
-            except Exception as e:
-                pass
-            edit_func.dialog.Data_nascimento_input.dateChanged.connect(self.function.handle_data_nascimento)
-
-            
-            self.function.handle_funcao(edit_func.dialog.funcao_input.currentText(), self.funcoes.return_funcoes())
-            edit_func.dialog.funcao_input.currentTextChanged.connect(lambda: self.function.handle_funcao(
-                edit_func.dialog.funcao_input.currentText(),
-                self.funcoes.return_funcoes()
-            ))
-            
-            
-            edit_func.dialog.Email_input.setText(user_data[0][6])
-            edit_func.dialog.Email_input.textChanged.connect(self.function.handle_email)
-            edit_func.dialog.Telefone_input.setText(user_data[0][7])
-            edit_func.dialog.Telefone_input.textChanged.connect(self.function.handle_telefone)
-            try:
-                time    = datetime.strptime(str(user_data[0][8]), "%H:%M:%S")
-                qtime   = QTime(int(time.strftime("%H")), int(time.strftime("%M")), int(time.strftime("%S")))
-                edit_func.dialog.Horas_Trab_Dia_input.setTime(qtime)
-            except Exception as e:
-                pass
-            edit_func.dialog.Horas_Trab_Dia_input.timeChanged.connect(self.function.handle_horas_trabalhadas)
-            edit_func.dialog.sub_button.clicked.connect(lambda: self.function.edit_funcionario(edit_func.dialog.dlg, self.refresh))
-            QApplication.restoreOverrideCursor()
-            edit_func.dialog.dlg.exec_()
-        
+                
+                self.function.handle_funcao(edit_func.dialog.funcao_input.currentText(), self.funcoes.return_funcoes())
+                edit_func.dialog.funcao_input.currentTextChanged.connect(lambda: self.function.handle_funcao(
+                    edit_func.dialog.funcao_input.currentText(),
+                    self.funcoes.return_funcoes()
+                ))
+                
+                
+                edit_func.dialog.Email_input.setText(user_data[0][6])
+                edit_func.dialog.Email_input.textChanged.connect(self.function.handle_email)
+                edit_func.dialog.Telefone_input.setText(user_data[0][7])
+                edit_func.dialog.Telefone_input.textChanged.connect(self.function.handle_telefone)
+                try:
+                    time    = datetime.strptime(str(user_data[0][8]), "%H:%M:%S")
+                    qtime   = QTime(int(time.strftime("%H")), int(time.strftime("%M")), int(time.strftime("%S")))
+                    edit_func.dialog.Horas_Trab_Dia_input.setTime(qtime)
+                except Exception as e:
+                    pass
+                edit_func.dialog.Horas_Trab_Dia_input.timeChanged.connect(self.function.handle_horas_trabalhadas)
+                edit_func.dialog.sub_button.clicked.connect(lambda: self.function.edit_funcionario(edit_func.dialog.dlg, self.refresh))
+                QApplication.restoreOverrideCursor()
+                edit_func.dialog.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)    
     
     def exclude_funcionario(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.functions  = Functions()
-        c   = Confirmation_Screen()
-        reg_selecionados    = len(self.func_box.check_box_func())
 
-        if(reg_selecionados == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhum funcionário selecionado para exclusão""",
-                onlyText=True
-            )
-        else:
-            
-            c.confirm_btn.clicked.connect(lambda: self.functions.exclude_func(
-                c.dialog,
-                self.func_box.check_box_func(),
-                self.refresh
-            ))
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Deseja excluir %s registros de Funcionários?""" % reg_selecionados,
-                btn=True
-            )
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.functions  = Functions()
+            c   = Confirmation_Screen()
+            reg_selecionados    = len(self.func_box.check_box_func())
+
+            if(reg_selecionados == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhum funcionário selecionado para exclusão""",
+                    onlyText=True
+                )
+            else:
+                
+                c.confirm_btn.clicked.connect(lambda: self.functions.exclude_func(
+                    c.dialog,
+                    self.func_box.check_box_func(),
+                    self.refresh
+                ))
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Deseja excluir %s registros de Funcionários?""" % reg_selecionados,
+                    btn=True
+                )
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
             
 
     def refresh(self):
@@ -1228,41 +1270,57 @@ class Ui_MainWindow(QMainWindow):
         self.verticalLayout_6.addWidget(Func_Window(self.funcs))
     
     def del_user(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        reg_selecionados    = len(self.users_list.check_box_func())
 
-        if(reg_selecionados == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhum usuário selecionado para exclusão""",
-                onlyText=True
-            )
-        else:
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                "Deseja excluir %s registros de usuários?" % reg_selecionados, 
-                list=self.users_list.check_box_func(),
-                user=True,
-                refresh_1=self.refresh_users_screen
-            )
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            reg_selecionados    = len(self.users_list.check_box_func())
+
+            if(reg_selecionados == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhum usuário selecionado para exclusão""",
+                    onlyText=True
+                )
+            else:
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    "Deseja excluir %s registros de usuários?" % reg_selecionados, 
+                    list=self.users_list.check_box_func(),
+                    user=True,
+                    refresh_1=self.refresh_users_screen
+                )
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
 
     def edit_user(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        if(len(self.users_list.check_box_func()) == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation("Nenhum usuário selecionado!", onlyText=True)
-        elif(len(self.users_list.check_box_func()) > 1):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation("Para edição, só é possível a seleção de um usuário!", onlyText=True)
-        else:
-            QApplication.restoreOverrideCursor()
-            id  = self.users_list.check_box_func()[0]
-            self.sql                = DB_Alter()
-            user_data   = self.sql.user_data(id)
-            
-            FrameBox().frame_box(user_data[0], user_data[1], user_data[2], id, self.refresh_users_screen)
+
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            if(len(self.users_list.check_box_func()) == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation("Nenhum usuário selecionado!", onlyText=True)
+            elif(len(self.users_list.check_box_func()) > 1):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation("Para edição, só é possível a seleção de um usuário!", onlyText=True)
+            else:
+                QApplication.restoreOverrideCursor()
+                id  = self.users_list.check_box_func()[0]
+                self.sql                = DB_Alter()
+                user_data   = self.sql.user_data(id)
+                
+                FrameBox().frame_box(user_data[0], user_data[1], user_data[2], id, self.refresh_users_screen)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
  
     def btn_page_1_onClick(self):
         self.change_buttons_color()
@@ -1303,13 +1361,21 @@ class Ui_MainWindow(QMainWindow):
         self.crud_buttons_7.del_user_btn.hide()
 
     def add_cargo_onClick(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.add_cargo  = Add_Cargo()
-        self.add_cargo.name_input.textChanged.connect(self.cargos_funcoes.handle_descricao)
-        
-        self.add_cargo.sub_button.clicked.connect(lambda: self.cargos_funcoes.cargo_submit(self.add_cargo.dlg, self.refresh_cargos_screen, self.refresh, self.hide_self_screen))
-        QApplication.restoreOverrideCursor()
-        self.add_cargo.dlg.exec_()
+
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.add_cargo  = Add_Cargo()
+            self.add_cargo.name_input.textChanged.connect(self.cargos_funcoes.handle_descricao)
+            
+            self.add_cargo.sub_button.clicked.connect(lambda: self.cargos_funcoes.cargo_submit(self.add_cargo.dlg, self.refresh_cargos_screen, self.refresh, self.hide_self_screen))
+            QApplication.restoreOverrideCursor()
+            self.add_cargo.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     
     def hide_self_screen(self):
         self.hide()
@@ -1317,56 +1383,71 @@ class Ui_MainWindow(QMainWindow):
         #self.refresh()
                 
     def exclude_cargo(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        self.funcao         = Cargos()
-        reg_selecionados    = len(self.cargos_list.check_box_func())
 
-        if(reg_selecionados == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhum cargo selecionado para exclusão""",
-                onlyText=True
-            )
-        else:
-            QApplication.restoreOverrideCursor()
-            c.confirm_btn.clicked.connect(lambda: self.funcao.del_cargos(
-                c.dialog,
-                self.cargos_list.check_box_func(),
-                self.refresh_cargos_screen,
-                self.refresh
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            self.funcao         = Cargos()
+            reg_selecionados    = len(self.cargos_list.check_box_func())
 
-            ))
-            c.show_confirmation(
-                "Deseja excluir %s registros de cargos?" % reg_selecionados, 
-                btn=True
-            )
+            if(reg_selecionados == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhum cargo selecionado para exclusão""",
+                    onlyText=True
+                )
+            else:
+                QApplication.restoreOverrideCursor()
+                c.confirm_btn.clicked.connect(lambda: self.funcao.del_cargos(
+                    c.dialog,
+                    self.cargos_list.check_box_func(),
+                    self.refresh_cargos_screen,
+                    self.refresh
+
+                ))
+                c.show_confirmation(
+                    "Deseja excluir %s registros de cargos?" % reg_selecionados, 
+                    btn=True
+                )
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
 
     def update_cargo(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        if(len(self.cargos_list.check_box_func()) > 1):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Só é possivel a seleção para edição de apenas um cargo por vez!""",
-                onlyText=True
-            )
-        elif(len(self.cargos_list.check_box_func()) == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhum cargo selecionado para edição!""",
-                onlyText=True
-            )
-        else:
-            
-            self.cargos_funcoes = Cargos(id=str(self.cargos_list.check_box_func()[0]))
-            edit_cargo_dialog   = Edit_Cargo(Funcoes().return_funcao_data(str(self.cargos_list.check_box_func()[0])))
-            edit_cargo_dialog.dialog.name_input.textChanged.connect(self.cargos_funcoes.handle_descricao)
-            edit_cargo_dialog.dialog.sub_button.clicked.connect(lambda: self.cargos_funcoes.edit_cargo(edit_cargo_dialog.dialog.dlg, self.refresh_cargos_screen, self.refresh))
-            
-            #self.edit_cargo_dialog.dialog.sub_button.clicked.connect(lambda: self.cargos_funcoes.edit_cargo(self.dialog.dlg))
-            QApplication.restoreOverrideCursor()
-            edit_cargo_dialog.dialog.dlg.exec_()
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            if(len(self.cargos_list.check_box_func()) > 1):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Só é possivel a seleção para edição de apenas um cargo por vez!""",
+                    onlyText=True
+                )
+            elif(len(self.cargos_list.check_box_func()) == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhum cargo selecionado para edição!""",
+                    onlyText=True
+                )
+            else:
+                
+                self.cargos_funcoes = Cargos(id=str(self.cargos_list.check_box_func()[0]))
+                edit_cargo_dialog   = Edit_Cargo(Funcoes().return_funcao_data(str(self.cargos_list.check_box_func()[0])))
+                edit_cargo_dialog.dialog.name_input.textChanged.connect(self.cargos_funcoes.handle_descricao)
+                edit_cargo_dialog.dialog.sub_button.clicked.connect(lambda: self.cargos_funcoes.edit_cargo(edit_cargo_dialog.dialog.dlg, self.refresh_cargos_screen, self.refresh))
+                
+                #self.edit_cargo_dialog.dialog.sub_button.clicked.connect(lambda: self.cargos_funcoes.edit_cargo(self.dialog.dlg))
+                QApplication.restoreOverrideCursor()
+                edit_cargo_dialog.dialog.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
             
     def refresh_cargos_screen(self):
         
@@ -1434,120 +1515,142 @@ class Ui_MainWindow(QMainWindow):
         self.crud_buttons_7.del_user_btn.hide()
 
     def atrib_func(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.add_obra    = Add_Obra()
-        self.type       = "obra"
-        self.clientes_functions = Clientes()
-        clientes    = self.clientes_functions.refresh()
-        if(clientes == False):
-            message = QMessageBox()
-            message.setIcon(QMessageBox.Critical)
-            message.setText("É necessário cadastrar um cliente primeiro!")
-            message.setWindowTitle("ERROR")
-            QApplication.restoreOverrideCursor()
-            message.exec_()
-            self.crud_buttons_3.add_user_btn.setChecked(False)
-            self.crud_buttons_6.add_user_btn.click()
-        else:
-            for x in self.clientes_functions.refresh():
-                texto = "{} - {}".format(x[1], x[2])
-                self.add_obra.input_cliente.addItem(texto)
-            self.functions  = Obras_Functions()
-            self.add_obra_screen = Atrib_Func_Screen()
-            if(self.add_obra_screen.return_data == False):
-                pass
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.add_obra    = Add_Obra()
+            self.type       = "obra"
+            self.clientes_functions = Clientes()
+            clientes    = self.clientes_functions.refresh()
+            if(clientes == False):
+                message = QMessageBox()
+                message.setIcon(QMessageBox.Critical)
+                message.setText("É necessário cadastrar um cliente primeiro!")
+                message.setWindowTitle("ERROR")
+                QApplication.restoreOverrideCursor()
+                message.exec_()
+                self.crud_buttons_3.add_user_btn.setChecked(False)
+                self.crud_buttons_6.add_user_btn.click()
             else:
+                for x in self.clientes_functions.refresh():
+                    texto = "{} - {}".format(x[1], x[2])
+                    self.add_obra.input_cliente.addItem(texto)
+                self.functions  = Obras_Functions()
+                self.add_obra_screen = Atrib_Func_Screen()
+                if(self.add_obra_screen.return_data == False):
+                    pass
+                else:
+                    self.add_obra.verticalLayout_frame_5.addWidget(self.add_obra_screen)
+                    self.add_obra.dlg.show()
+                    self.add_obra.name_input.textChanged.connect(self.functions.handle_descricao)
+                    self.add_obra.input_data.dateChanged.connect(self.functions.handle_data)
+                    self.add_obra.sub_button.clicked.connect(lambda: self.functions.add_obra(self.add_obra_screen.check_box_func(), self.add_obra.dlg, self.refresh_folha_screen, self.add_obra.input_cliente.currentText()))
+                    QApplication.restoreOverrideCursor()
+                    self.add_obra.dlg.exec_()
+                    #self.refresh_folha_screen()
+                    self.crud_buttons_5.add_user_btn.hide()
+                    self.crud_buttons_5.edit_user_btn.hide()
+                    self.crud_buttons_5.del_user_btn.hide()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
+        
+    def edit_obra(self):
+
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            obra_selected   = self.folha_list.check_box_func()
+            c   = Confirmation_Screen()
+
+            if(len(obra_selected) == 0 or len(obra_selected) > 1):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    "Só é permitida a edição de uma obra por vez!",
+                    onlyText=True
+                )
+            else:
+                QApplication.restoreOverrideCursor()
+                self.add_obra   = Add_Obra()
+                self.add_obra.dlg.setWindowTitle("Edição de Obra")
+                
+                self.functions          = Obras_Functions()
+                self.add_obra_screen    = Atrib_Func_Screen(edited=True, id_obra=obra_selected[0])
+                self.clientes_functions = Clientes()
+                for x in self.clientes_functions.refresh():
+                    texto = "{} - {}".format(x[1], x[2])
+                    self.add_obra.input_cliente.addItem(texto)
+                
+                selected_func           = self.add_obra_screen.check_box_func()
+                db_response             = self.functions.return_obra_data(obra_selected[0])
+                if(db_response[0][2] == None):
+                    pass
+                else:
+                    data    = datetime.strptime(str(db_response[0][2]), "%Y-%m-%d %H:%M:%S")
+                    qdate   = QDate(int(data.strftime("%Y")), int(data.strftime("%m")), int(data.strftime("%d")))
+                    self.add_obra.input_data.setDate(qdate)
+                    self.add_obra.data = data
+                
+                self.add_obra.input_data.dateChanged.connect(self.functions.handle_data)
                 self.add_obra.verticalLayout_frame_5.addWidget(self.add_obra_screen)
                 self.add_obra.dlg.show()
                 self.add_obra.name_input.textChanged.connect(self.functions.handle_descricao)
-                self.add_obra.input_data.dateChanged.connect(self.functions.handle_data)
-                self.add_obra.sub_button.clicked.connect(lambda: self.functions.add_obra(self.add_obra_screen.check_box_func(), self.add_obra.dlg, self.refresh_folha_screen, self.add_obra.input_cliente.currentText()))
+                self.add_obra.name_input.setText(
+                    self.add_obra_screen.descricao[0][0]
+                )
+                self.functions.edited(db_response)
+                self.add_obra.sub_button.clicked.connect(lambda: self.functions.edit_obra(
+                    self.add_obra_screen.check_box_func(), 
+                    self.add_obra_screen.funcs,
+                    self.add_obra.dlg,
+                    self.refresh_folha_screen,
+                    obra_selected[0],
+                    self.refresh_folha_screen,
+                    self.add_obra.input_cliente.currentText()
+                ))
                 QApplication.restoreOverrideCursor()
                 self.add_obra.dlg.exec_()
-                #self.refresh_folha_screen()
                 self.crud_buttons_5.add_user_btn.hide()
                 self.crud_buttons_5.edit_user_btn.hide()
                 self.crud_buttons_5.del_user_btn.hide()
-        
-    def edit_obra(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        obra_selected   = self.folha_list.check_box_func()
-        c   = Confirmation_Screen()
-
-        if(len(obra_selected) == 0 or len(obra_selected) > 1):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                "Só é permitida a edição de uma obra por vez!",
-                onlyText=True
-            )
-        else:
-            QApplication.restoreOverrideCursor()
-            self.add_obra   = Add_Obra()
-            self.add_obra.dlg.setWindowTitle("Edição de Obra")
-            
-            self.functions          = Obras_Functions()
-            self.add_obra_screen    = Atrib_Func_Screen(edited=True, id_obra=obra_selected[0])
-            self.clientes_functions = Clientes()
-            for x in self.clientes_functions.refresh():
-                texto = "{} - {}".format(x[1], x[2])
-                self.add_obra.input_cliente.addItem(texto)
-            
-            selected_func           = self.add_obra_screen.check_box_func()
-            db_response             = self.functions.return_obra_data(obra_selected[0])
-            if(db_response[0][2] == None):
-                pass
-            else:
-                data    = datetime.strptime(str(db_response[0][2]), "%Y-%m-%d %H:%M:%S")
-                qdate   = QDate(int(data.strftime("%Y")), int(data.strftime("%m")), int(data.strftime("%d")))
-                self.add_obra.input_data.setDate(qdate)
-                self.add_obra.data = data
-            
-            self.add_obra.input_data.dateChanged.connect(self.functions.handle_data)
-            self.add_obra.verticalLayout_frame_5.addWidget(self.add_obra_screen)
-            self.add_obra.dlg.show()
-            self.add_obra.name_input.textChanged.connect(self.functions.handle_descricao)
-            self.add_obra.name_input.setText(
-                self.add_obra_screen.descricao[0][0]
-            )
-            self.functions.edited(db_response)
-            self.add_obra.sub_button.clicked.connect(lambda: self.functions.edit_obra(
-                self.add_obra_screen.check_box_func(), 
-                self.add_obra_screen.funcs,
-                self.add_obra.dlg,
-                self.refresh_folha_screen,
-                obra_selected[0],
-                self.refresh_folha_screen,
-                self.add_obra.input_cliente.currentText()
-            ))
-            QApplication.restoreOverrideCursor()
-            self.add_obra.dlg.exec_()
-            self.crud_buttons_5.add_user_btn.hide()
-            self.crud_buttons_5.edit_user_btn.hide()
-            self.crud_buttons_5.del_user_btn.hide()
-
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     
     def del_obra(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.functions  = Obras_Functions()
-        
-        c               = Confirmation_Screen()
 
-        selected_id     = self.folha_list.check_box_func()
-
-        if(len(selected_id) == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhuma obra selecionada para exclusão!""",
-                True
-            )
-        else:
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.functions  = Obras_Functions()
             
-            c.confirm_btn.clicked.connect(lambda: self.functions.del_obra(selected_id, c.dialog, self.refresh_folha_screen))
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Deseja excluir %s registros de Obras?""" % len(selected_id),
-                btn=True
-            )
+            c               = Confirmation_Screen()
+
+            selected_id     = self.folha_list.check_box_func()
+
+            if(len(selected_id) == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhuma obra selecionada para exclusão!""",
+                    True
+                )
+            else:
+                
+                c.confirm_btn.clicked.connect(lambda: self.functions.del_obra(selected_id, c.dialog, self.refresh_folha_screen))
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Deseja excluir %s registros de Obras?""" % len(selected_id),
+                    btn=True
+                )
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
             
         
 
@@ -1613,29 +1716,35 @@ class Ui_MainWindow(QMainWindow):
         
         
     def create_folha(self):
-        
-        if(self.cont_folha == 0):
-            self.cont_folha += 1
-            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-            self.obras  = Obras_Functions().refresh()
-            self.folha_ponto    = Folha_Params()
-            self.folha_ponto.data_Inicial_input.dateChanged.connect(self.data_inicial)
-            self.folha_ponto.Data_final_input.dateChanged.connect(self.data_final)
-            if(self.obras == False):
-                QApplication.restoreOverrideCursor()
-                self.btn_page_4.click()
-                ErrorMessage("Nenhuma obra cadastrada, cadastre uma obra para poder criar uma folha de ponto!").message.exec_()
-                    
-            else:
-                for x in self.obras:
-                    self.folha_ponto.obra_input.addItem(x[1])
+        try:
+            if(self.cont_folha == 0):
+                self.cont_folha += 1
+                QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+                self.obras  = Obras_Functions().refresh()
+                self.folha_ponto    = Folha_Params()
+                self.folha_ponto.data_Inicial_input.dateChanged.connect(self.data_inicial)
+                self.folha_ponto.Data_final_input.dateChanged.connect(self.data_final)
+                if(self.obras == False):
+                    QApplication.restoreOverrideCursor()
+                    self.btn_page_4.click()
+                    ErrorMessage("Nenhuma obra cadastrada, cadastre uma obra para poder criar uma folha de ponto!").message.exec_()
+                        
+                else:
+                    for x in self.obras:
+                        self.folha_ponto.obra_input.addItem(x[1])
 
-                self.folha_ponto.sub_button.clicked.connect(lambda: self.ponto_folha_submit(self.folha_ponto.dialog))
-                QApplication.restoreOverrideCursor()
-                
-                self.folha_ponto.dialog.exec_()
-                QApplication.restoreOverrideCursor()
-                self.crud_buttons_5.add_user_btn.setChecked(False)
+                    self.folha_ponto.sub_button.clicked.connect(lambda: self.ponto_folha_submit(self.folha_ponto.dialog))
+                    QApplication.restoreOverrideCursor()
+                    
+                    self.folha_ponto.dialog.exec_()
+                    QApplication.restoreOverrideCursor()
+                    self.crud_buttons_5.add_user_btn.setChecked(False)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
                 
         
             
@@ -1649,82 +1758,141 @@ class Ui_MainWindow(QMainWindow):
         self.data_final_folha = datetime.strptime(str(text.day())+"-"+str(text.month())+"-"+str(text.year()), "%d-%m-%Y")
 
     def ponto_folha_submit(self, screen):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.obras  = Obras_Functions().refresh()
-        
-        self.crud_buttons_5.add_user_btn.setChecked(False)
-        #QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        if(self.verticalLayout_page_folha_ponto.count() > 0):
-            for x in range(self.verticalLayout_page_folha_ponto.count()):
-                self.verticalLayout_page_folha_ponto.itemAt(x).widget().setParent(None)
 
-        self.functions = Folha_Ponto_Function()
-        self.obra_escolhida = self.obras[self.folha_ponto.obra_input.currentIndex()][0]
-        if(self.folha_ponto.check_box.isChecked()):
-            screen.close()
-            QApplication.restoreOverrideCursor()
-            self.table  = QTable(
-                self.data_inicial_folha.strftime("%d-%m-%Y"), 
-                self.data_final_folha.strftime("%d-%m-%Y"),
-                self.functions.return_func_obra(
-                    self.obra_escolhida, 
-                    True,
-                    self.data_inicial_folha.strftime("%Y%m%d"), 
-                    self.data_final_folha.strftime("%Y%m%d")
-                ),
-                True
-            )
-        else:
-            QApplication.restoreOverrideCursor()
-            screen.close()
-            self.table  = QTable(
-                self.data_inicial_folha.strftime("%d-%m-%Y"), 
-                self.data_final_folha.strftime("%d-%m-%Y"),
-                self.functions.return_func_obra(self.obra_escolhida)
-            )
-
-            message = QMessageBox()
-            message.setWindowTitle("ARX Sistemas")
-
-            self.type   = "folha"
-            self.crud_buttons_5.add_user_btn.hide()
-            self.crud_buttons_5.edit_user_btn.hide()
-            self.crud_buttons_5.del_user_btn.hide()
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.obras  = Obras_Functions().refresh()
             
-            self.crud_buttons_teste.add_user_btn.show()
-            
-            self.crud_buttons_teste.add_user_btn.clicked.connect(lambda: self.functions.add_values(self.table.array, message))
-        
-        self.verticalLayout_page_folha_ponto.addWidget(self.table.dialog)
-        
-        
-        self.verticalLayout_page_folha_ponto.update()
-        #QApplication.restoreOverrideCursor()
+            self.crud_buttons_5.add_user_btn.setChecked(False)
+            #QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            if(self.verticalLayout_page_folha_ponto.count() > 0):
+                for x in range(self.verticalLayout_page_folha_ponto.count()):
+                    self.verticalLayout_page_folha_ponto.itemAt(x).widget().setParent(None)
 
-    def delete_folha(self):
-        if(self.cont_folha_del == 0):
-            self.cont_folha_del += 1
-            try:
-                QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-                self.functions  = Folha_Ponto_Function()
+            self.functions = Folha_Ponto_Function()
+            self.obra_escolhida = self.obras[self.folha_ponto.obra_input.currentIndex()][0]
+            if(self.folha_ponto.check_box.isChecked()):
+                screen.close()
+                QApplication.restoreOverrideCursor()
+                self.table  = QTable(
+                    self.data_inicial_folha.strftime("%d-%m-%Y"), 
+                    self.data_final_folha.strftime("%d-%m-%Y"),
+                    self.functions.return_func_obra(
+                        self.obra_escolhida, 
+                        True,
+                        self.data_inicial_folha.strftime("%Y%m%d"), 
+                        self.data_final_folha.strftime("%Y%m%d")
+                    ),
+                    True
+                )
+            else:
+                QApplication.restoreOverrideCursor()
+                screen.close()
+                self.table  = QTable(
+                    self.data_inicial_folha.strftime("%d-%m-%Y"), 
+                    self.data_final_folha.strftime("%d-%m-%Y"),
+                    self.functions.return_func_obra(self.obra_escolhida)
+                )
+
+                message = QMessageBox()
+                message.setWindowTitle("ARX Sistemas")
+
+                self.type   = "folha"
+                self.crud_buttons_5.add_user_btn.hide()
+                self.crud_buttons_5.edit_user_btn.hide()
+                self.crud_buttons_5.del_user_btn.hide()
                 
-                c               = Confirmation_Screen()
-
-                selected_id     = self.Lista_De_Folha.check_box_func()
-                if(len(selected_id) == 0):
-                    QApplication.restoreOverrideCursor()
-                    c.show_confirmation(
-                        """Nenhuma obra selecionada para exclusão!""",
-                        True
-                    )
-                else:
+                self.crud_buttons_teste.add_user_btn.show()
+                
+                self.crud_buttons_teste.add_user_btn.clicked.connect(self.add_values)
+            
+            self.verticalLayout_page_folha_ponto.addWidget(self.table.dialog)
+            
+            
+            self.verticalLayout_page_folha_ponto.update()
+            #QApplication.restoreOverrideCursor()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
+    def delete_folha(self):
+        try:
+            if(self.cont_folha_del == 0):
+                self.cont_folha_del += 1
+                try:
+                    QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+                    self.functions  = Folha_Ponto_Function()
                     
-                    c.confirm_btn.clicked.connect(lambda: self.functions.del_folha(selected_id, c.dialog, self.refresh_folha_screen))
+                    c               = Confirmation_Screen()
+
+                    selected_id     = self.Lista_De_Folha.check_box_func()
+                    if(len(selected_id) == 0):
+                        QApplication.restoreOverrideCursor()
+                        c.show_confirmation(
+                            """Nenhuma obra selecionada para exclusão!""",
+                            True
+                        )
+                    else:
+                        
+                        c.confirm_btn.clicked.connect(lambda: self.functions.del_folha(selected_id, c.dialog, self.refresh_folha_screen))
+                        QApplication.restoreOverrideCursor()
+                        c.show_confirmation(
+                            """Deseja excluir %s registros de Obras?""" % len(selected_id),
+                            btn=True
+                        )
+                except Exception as e:
                     QApplication.restoreOverrideCursor()
-                    c.show_confirmation(
-                        """Deseja excluir %s registros de Obras?""" % len(selected_id),
-                        btn=True
+                    message = QMessageBox()
+                    message.setIcon(QMessageBox.Critical)
+                    message.setWindowTitle("ERROR")
+                    message.setText("CRIE UMA FOLHA DE PONTO")
+                    message.exec_()
+                    self.crud_buttons_5.add_user_btn.click()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
+
+    def edit_folha(self):
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            if(self.verticalLayout_page_folha_ponto.count() > 0):
+                for x in range(self.verticalLayout_page_folha_ponto.count()):
+                    self.verticalLayout_page_folha_ponto.itemAt(x).widget().setParent(None)
+
+            self.functions = Folha_Ponto_Function()
+            try:
+                self.obra_escolhida = self.Lista_De_Folha.check_box_func()
+                
+                data    = self.functions.return_data(self.obra_escolhida[0])
+                
+                data_inicial    = datetime.strptime(str(data[0][0]), "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+                data_final    = datetime.strptime(str(data[0][1]), "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+
+                self.table  = QTable(
+                        data_inicial, 
+                        data_final,
+                        self.functions.return_func_obra(self.obra_escolhida[0])
                     )
+
+                message = QMessageBox()
+                message.setWindowTitle("ARX Sistemas")
+                self.crud_buttons_5.add_user_btn.hide()
+                self.crud_buttons_5.edit_user_btn.hide()
+                self.crud_buttons_5.del_user_btn.hide()
+                
+                self.crud_buttons_teste.add_user_btn.show()
+                
+                self.crud_buttons_teste.add_user_btn.clicked.connect(self.add_values)
+                QApplication.restoreOverrideCursor()
+                self.verticalLayout_page_folha_ponto.addWidget(self.table.dialog)
+                
+                
+                self.verticalLayout_page_folha_ponto.update()
             except Exception as e:
                 QApplication.restoreOverrideCursor()
                 message = QMessageBox()
@@ -1733,61 +1901,29 @@ class Ui_MainWindow(QMainWindow):
                 message.setText("CRIE UMA FOLHA DE PONTO")
                 message.exec_()
                 self.crud_buttons_5.add_user_btn.click()
-    
-    def edit_folha(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        if(self.verticalLayout_page_folha_ponto.count() > 0):
-            for x in range(self.verticalLayout_page_folha_ponto.count()):
-                self.verticalLayout_page_folha_ponto.itemAt(x).widget().setParent(None)
-
-        self.functions = Folha_Ponto_Function()
-        try:
-            self.obra_escolhida = self.Lista_De_Folha.check_box_func()
-            
-            data    = self.functions.return_data(self.obra_escolhida[0])
-            
-            data_inicial    = datetime.strptime(str(data[0][0]), "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
-            data_final    = datetime.strptime(str(data[0][1]), "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
-
-            self.table  = QTable(
-                    data_inicial, 
-                    data_final,
-                    self.functions.return_func_obra(self.obra_escolhida[0])
-                )
-
-            message = QMessageBox()
-            message.setWindowTitle("ARX Sistemas")
-            self.crud_buttons_5.add_user_btn.hide()
-            self.crud_buttons_5.edit_user_btn.hide()
-            self.crud_buttons_5.del_user_btn.hide()
-            
-            self.crud_buttons_teste.add_user_btn.show()
-            
-            self.crud_buttons_teste.add_user_btn.clicked.connect(self.add_values)
-            QApplication.restoreOverrideCursor()
-            self.verticalLayout_page_folha_ponto.addWidget(self.table.dialog)
-            
-            
-            self.verticalLayout_page_folha_ponto.update()
         except Exception as e:
-            QApplication.restoreOverrideCursor()
-            message = QMessageBox()
-            message.setIcon(QMessageBox.Critical)
-            message.setWindowTitle("ERROR")
-            message.setText("CRIE UMA FOLHA DE PONTO")
-            message.exec_()
-            self.crud_buttons_5.add_user_btn.click()
-
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
 
         
     def add_values(self):
         if(self.counter == 0):
             self.counter += 1
-            res = list({v['Funcionario']:v for v in self.table.array}.values())
+            array = []
+            for x in range(len(self.table.array)):
+                if(self.table.array[x] not in array):
+                    array.append(self.table.array[x])
+                else:
+                    pass
+            
+                #res = list({v['Funcionario']:v for v in self.table.array[x]}.values())
             #res = list(set((key, val) for dic in self.table.array for key, val in dic.items()))
             
             #print(res)
-            self.functions.add_values(res, self.table)
+            self.functions.add_values(array, self.table)
         else:
             self.counter -= 1
 
@@ -1864,124 +2000,147 @@ class Ui_MainWindow(QMainWindow):
         self.crud_buttons_7.del_user_btn.hide()
 
     def add_cliente(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.add_cliente    = Window_Add_Cliente()
-        self.clientes_functions = Clientes()
-        inputs_array    = [
-            self.add_cliente.nome_input,
-            self.add_cliente.endereco_input,
-        ]
-        self.add_cliente.nome_input.textChanged.connect(
-            self.clientes_functions.handle_nome
-        )
-        self.clientes_functions.inputs(inputs_array)
-        self.add_cliente.cnpj_input.textChanged.connect(
-            self.clientes_functions.handle_cnpj
-        )
-        self.add_cliente.telefoneInput.textChanged.connect(
-            self.clientes_functions.handle_telefone
-        )
-        
-        self.add_cliente.email_input.textChanged.connect(
-            self.clientes_functions.handle_email
-        )
-        self.add_cliente.endereco_input.textChanged.connect(
-            self.clientes_functions.handle_endereco
-        )
-        self.add_cliente.sub_button.clicked.connect(
-            lambda:
-            self.clientes_functions.onClick_add_cliente(
-                self.refresh_cliente_screen,
-                self.add_cliente.dlg
-            )
-            
-        )
-        QApplication.restoreOverrideCursor()
-        self.add_cliente.dlg.exec_()
 
-    def edit_cliente(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        selected_cliente    = self.clientes_screen.check_box_func()
-        self.clientes_functions = Clientes()
-        if(len(selected_cliente) == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhuma obra selecionada para exclusão!""",
-                True
-            )
-        elif(len(selected_cliente) > 1):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Só é permitida a edição de um cliente!""",
-                True
-            )
-        else:
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.add_cliente    = Window_Add_Cliente()
             self.clientes_functions = Clientes()
-            db_response = self.clientes_functions.return_client_data(selected_cliente[0])
-            
             inputs_array    = [
                 self.add_cliente.nome_input,
                 self.add_cliente.endereco_input,
             ]
-            self.add_cliente.nome_input.setReadOnly(True)
+            self.add_cliente.nome_input.textChanged.connect(
+                self.clientes_functions.handle_nome
+            )
             self.clientes_functions.inputs(inputs_array)
-            self.add_cliente.cnpj_input.setText(db_response[0][1])
-            self.add_cliente.nome_input.setText(db_response[0][2])
             self.add_cliente.cnpj_input.textChanged.connect(
                 self.clientes_functions.handle_cnpj
             )
-            self.add_cliente.telefoneInput.setText(db_response[0][4])
             self.add_cliente.telefoneInput.textChanged.connect(
                 self.clientes_functions.handle_telefone
             )
             
-            self.add_cliente.email_input.setText(db_response[0][3])
             self.add_cliente.email_input.textChanged.connect(
                 self.clientes_functions.handle_email
             )
-
-            self.add_cliente.endereco_input.setText(db_response[0][5])
             self.add_cliente.endereco_input.textChanged.connect(
                 self.clientes_functions.handle_endereco
             )
             self.add_cliente.sub_button.clicked.connect(
                 lambda:
-                self.clientes_functions.onClick_edit_client(
-                    self.add_cliente.dlg,
-                    self.refresh_cliente_screen
+                self.clientes_functions.onClick_add_cliente(
+                    self.refresh_cliente_screen,
+                    self.add_cliente.dlg
                 )
                 
             )
             QApplication.restoreOverrideCursor()
             self.add_cliente.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
+
+    def edit_cliente(self):
+
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            selected_cliente    = self.clientes_screen.check_box_func()
+            self.clientes_functions = Clientes()
+            if(len(selected_cliente) == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhuma obra selecionada para exclusão!""",
+                    True
+                )
+            elif(len(selected_cliente) > 1):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Só é permitida a edição de um cliente!""",
+                    True
+                )
+            else:
+                self.add_cliente    = Window_Add_Cliente()
+                self.clientes_functions = Clientes()
+                db_response = self.clientes_functions.return_client_data(selected_cliente[0])
+                
+                inputs_array    = [
+                    self.add_cliente.nome_input,
+                    self.add_cliente.endereco_input,
+                ]
+                self.add_cliente.nome_input.setReadOnly(True)
+                self.clientes_functions.inputs(inputs_array)
+                self.add_cliente.cnpj_input.setText(db_response[0][1])
+                self.add_cliente.nome_input.setText(db_response[0][2])
+                self.add_cliente.cnpj_input.textChanged.connect(
+                    self.clientes_functions.handle_cnpj
+                )
+                self.add_cliente.telefoneInput.setText(db_response[0][4])
+                self.add_cliente.telefoneInput.textChanged.connect(
+                    self.clientes_functions.handle_telefone
+                )
+                
+                self.add_cliente.email_input.setText(db_response[0][3])
+                self.add_cliente.email_input.textChanged.connect(
+                    self.clientes_functions.handle_email
+                )
+
+                self.add_cliente.endereco_input.setText(db_response[0][5])
+                self.add_cliente.endereco_input.textChanged.connect(
+                    self.clientes_functions.handle_endereco
+                )
+                self.add_cliente.sub_button.clicked.connect(
+                    lambda:
+                    self.clientes_functions.onClick_edit_client(
+                        self.add_cliente.dlg,
+                        self.refresh_cliente_screen
+                    )
+                    
+                )
+                QApplication.restoreOverrideCursor()
+                self.add_cliente.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
 
     def delete_cliente(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        selected_cliente    = self.clientes_screen.check_box_func()
-        self.clientes_functions = Clientes()
-        if(len(selected_cliente) == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhuma obra selecionada para exclusão!""",
-                True
-            )
-        else:
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            selected_cliente    = self.clientes_screen.check_box_func()
+            self.clientes_functions = Clientes()
+            if(len(selected_cliente) == 0):
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Nenhuma obra selecionada para exclusão!""",
+                    True
+                )
+            else:
+                
+                c.confirm_btn.clicked.connect(lambda: self.clientes_functions.onClick_del_cliente(
+                    selected_cliente,
+                    c.dialog,
+                    self.refresh_cliente_screen
+                ))
+                QApplication.restoreOverrideCursor()
+                c.show_confirmation(
+                    """Deseja excluir %s registros de Obras?""" % len(selected_cliente),
+                    btn=True
+                )
             
-            c.confirm_btn.clicked.connect(lambda: self.clientes_functions.onClick_del_cliente(
-                selected_cliente,
-                c.dialog,
-                self.refresh_cliente_screen
-            ))
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Deseja excluir %s registros de Obras?""" % len(selected_cliente),
-                btn=True
-            )
-           
-            #self.refresh_cliente_screen()
+                #self.refresh_cliente_screen()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     
     def refresh_cliente_screen(self):
         self.clientes_functions = Clientes()
@@ -2036,27 +2195,35 @@ class Ui_MainWindow(QMainWindow):
         self.crud_buttons_7.del_user_btn.show()
     
     def add_despesa(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.despesa_screen =   Window_Form_Despesa()
-        self.function       =   Despesas()
-        self.despesa_screen.num_titulo_input.textChanged.connect(self.function.handle_num_titulo)
-        self.despesa_screen.descricao_input.textChanged.connect(self.function.handle_descricao)
-        self.despesa_screen.fornecedor_input.textChanged.connect(self.function.handle_fornecedor)
-        self.despesa_screen.valor_input.textChanged.connect(self.function.handle_valor)
-        
-        self.despesa_screen.observacao_input.textChanged.connect(self.function.handle_observacao)
-        self.despesa_screen.input_data.dateChanged.connect(self.function.handle_data)
-        self.despesa_screen.vincular_obra_check_box.clicked.connect(self.check_box_despesa)
-        self.despesa_screen.sub_button.clicked.connect(
-            lambda:
-            self.function.onClick_add_despesa(
-                self.folha_list.check_box_func(),
-                self.despesa_screen.dlg,
-                self.refresh_despesa_screen
+
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.despesa_screen =   Window_Form_Despesa()
+            self.function_despesas       =   Despesas()
+            self.despesa_screen.num_titulo_input.textChanged.connect(self.function_despesas.handle_num_titulo)
+            self.despesa_screen.descricao_input.textChanged.connect(self.function_despesas.handle_descricao)
+            self.despesa_screen.fornecedor_input.textChanged.connect(self.function_despesas.handle_fornecedor)
+            self.despesa_screen.valor_input.textChanged.connect(self.function_despesas.handle_valor)
+            
+            self.despesa_screen.observacao_input.textChanged.connect(self.function_despesas.handle_observacao)
+            self.despesa_screen.input_data.dateChanged.connect(self.function_despesas.handle_data)
+            self.despesa_screen.vincular_obra_check_box.clicked.connect(self.check_box_despesa)
+            self.despesa_screen.sub_button.clicked.connect(
+                lambda:
+                self.function_despesas.onClick_add_despesa(
+                    self.folha_list.check_box_func(),
+                    self.despesa_screen.dlg,
+                    self.refresh_despesa_screen
+                )
             )
-        )
-        QApplication.restoreOverrideCursor()
-        self.despesa_screen.dlg.exec_()
+            QApplication.restoreOverrideCursor()
+            self.despesa_screen.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     
     def check_box_despesa(self):
         
@@ -2081,87 +2248,100 @@ class Ui_MainWindow(QMainWindow):
                 self.despesa_screen.dlg.setMaximumHeight(350)
     
     def del_despesa(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        selected_despesa    = self.despesas_screen_list.check_box_func()
-        if(selected_despesa == None):
-            message = QMessageBox()
-            message.setIcon(QMessageBox.Critical)
-            message.setText("É necessário cadastrar uma despesa primeiro!")
-            message.setWindowTitle("ERROR")
-            QApplication.restoreOverrideCursor()
-            message.exec_()
-        else:
-            self.despesas_functions = Despesas()
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            selected_despesa    = self.despesas_screen_list.check_box_func()
+            if(selected_despesa == None):
+                message = QMessageBox()
+                message.setIcon(QMessageBox.Critical)
+                message.setText("É necessário cadastrar uma despesa primeiro!")
+                message.setWindowTitle("ERROR")
+                QApplication.restoreOverrideCursor()
+                message.exec_()
+            else:
+                self.despesas_functions = Despesas()
+                if(len(selected_despesa) == 0):
+                    QApplication.restoreOverrideCursor()
+                    c.show_confirmation(
+                        """Nenhum título selecionado para exclusão!""",
+                        True
+                    )
+                else:
+                    c.confirm_btn.clicked.connect(lambda: self.despesas_functions.onClick_del_despesa(
+                        selected_despesa,
+                        c.dialog,
+                        self.refresh_despesa_screen
+                    ))
+                    QApplication.restoreOverrideCursor()
+                    c.show_confirmation(
+                        """Deseja excluir %s registros de Obras?""" % len(selected_despesa),
+                        btn=True
+                    )
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
+                
+    def edit_despesa(self):
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            c   = Confirmation_Screen()
+            selected_despesa    = self.despesas_screen_list.check_box_func()
+            #self.despesas_functions = Despesas()
             if(len(selected_despesa) == 0):
                 QApplication.restoreOverrideCursor()
                 c.show_confirmation(
                     """Nenhum título selecionado para exclusão!""",
                     True
                 )
-            else:
-                c.confirm_btn.clicked.connect(lambda: self.despesas_functions.onClick_del_despesa(
-                    selected_despesa,
-                    c.dialog,
-                    self.refresh_despesa_screen
-                ))
+            elif(len(selected_despesa) > 1):
                 QApplication.restoreOverrideCursor()
                 c.show_confirmation(
-                    """Deseja excluir %s registros de Obras?""" % len(selected_despesa),
-                    btn=True
+                    """Só é permitida a edição de uma despesa!""",
+                    True
                 )
-                
-    def edit_despesa(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        c   = Confirmation_Screen()
-        selected_despesa    = self.despesas_screen_list.check_box_func()
-        #self.despesas_functions = Despesas()
-        if(len(selected_despesa) == 0):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Nenhum título selecionado para exclusão!""",
-                True
-            )
-        elif(len(selected_despesa) > 1):
-            QApplication.restoreOverrideCursor()
-            c.show_confirmation(
-                """Só é permitida a edição de uma despesa!""",
-                True
-            )
-        else:
-            self.function       =   Despesas()
-            db_response         = self.function.return_despesa_data(selected_despesa)
-            self.despesa_screen =   Window_Form_Despesa()
+            else:
+                self.function_despesas       =   Despesas()
+                db_response         = self.function_despesas.return_despesa_data(selected_despesa)
+                self.despesa_screen =   Window_Form_Despesa()
 
-            self.despesa_screen.num_titulo_input.setText(db_response[0][7])
-            self.despesa_screen.num_titulo_input.textChanged.connect(self.function.handle_num_titulo)
-            self.despesa_screen.descricao_input.setText(db_response[0][1])
-            self.despesa_screen.descricao_input.textChanged.connect(self.function.handle_descricao)
-            self.despesa_screen.fornecedor_input.setText(db_response[0][2])
-            self.despesa_screen.fornecedor_input.textChanged.connect(self.function.handle_fornecedor)
-            self.despesa_screen.valor_input.setText(str(db_response[0][3]))
-            self.despesa_screen.valor_input.textChanged.connect(self.function.handle_valor)
-            self.despesa_screen.observacao_input.setText(db_response[0][6])
-            self.despesa_screen.observacao_input.textChanged.connect(self.function.handle_observacao)
-            try:
-                data    = datetime.strptime(str(db_response[0][5]), "%Y-%m-%d %H:%M:%S")
-                date    = QDate(int(data.strftime("%Y")), int(data.strftime("%m")), int(data.strftime("%d")))
-                self.despesa_screen.input_data.setDate(date)
-            except Exception as e:
-                pass
-            self.despesa_screen.input_data.dateChanged.connect(self.function.handle_data)
-            self.despesa_screen.vincular_obra_check_box.hide()
-            self.despesa_screen.vincular_obra_label.hide()
-            self.despesa_screen.sub_button.clicked.connect(
-                lambda:
-                self.function.onClick_edit_despesa(
-                    self.despesa_screen.dlg,
-                    self.refresh_despesa_screen
+                self.despesa_screen.num_titulo_input.setText(db_response[0][7])
+                self.despesa_screen.num_titulo_input.textChanged.connect(self.function_despesas.handle_num_titulo)
+                self.despesa_screen.descricao_input.setText(db_response[0][1])
+                self.despesa_screen.descricao_input.textChanged.connect(self.function_despesas.handle_descricao)
+                self.despesa_screen.fornecedor_input.setText(db_response[0][2])
+                self.despesa_screen.fornecedor_input.textChanged.connect(self.function_despesas.handle_fornecedor)
+                self.despesa_screen.valor_input.setText(str(db_response[0][3]))
+                self.despesa_screen.valor_input.textChanged.connect(self.function_despesas.handle_valor)
+                self.despesa_screen.observacao_input.setText(db_response[0][6])
+                self.despesa_screen.observacao_input.textChanged.connect(self.function_despesas.handle_observacao)
+                try:
+                    data    = datetime.strptime(str(db_response[0][5]), "%Y-%m-%d %H:%M:%S")
+                    date    = QDate(int(data.strftime("%Y")), int(data.strftime("%m")), int(data.strftime("%d")))
+                    self.despesa_screen.input_data.setDate(date)
+                except Exception as e:
+                    pass
+                self.despesa_screen.input_data.dateChanged.connect(self.function.handle_data)
+                self.despesa_screen.vincular_obra_check_box.hide()
+                self.despesa_screen.vincular_obra_label.hide()
+                self.despesa_screen.sub_button.clicked.connect(
+                    lambda:
+                    self.function.onClick_edit_despesa(
+                        self.despesa_screen.dlg,
+                        self.refresh_despesa_screen
+                    )
                 )
-            )
-            QApplication.restoreOverrideCursor()
-            self.despesa_screen.dlg.exec_()
-            
+                QApplication.restoreOverrideCursor()
+                self.despesa_screen.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)        
 
     def refresh_despesa_screen(self):
         self.despesas_functions     = Despesas()
@@ -2173,25 +2353,31 @@ class Ui_MainWindow(QMainWindow):
         self.verticalLayout_page_despesas.update()
 
     def onClick_page_relatorio(self):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.change_buttons_color()
-        self.btn_page_relatorios.setStyleSheet(u"QPushButton {\n"
-        "	color: rgb(255, 255, 255);\n"
-        "	background-color: rgb(85, 170, 255);\n"
-        "	border: 0px solid;\n"
-        "}\n"
-        "QPushButton:hover {\n"
-        "	background-color: rgb(85, 170, 255);\n"
-        "}")
+        try:
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            self.change_buttons_color()
+            self.btn_page_relatorios.setStyleSheet(u"QPushButton {\n"
+            "	color: rgb(255, 255, 255);\n"
+            "	background-color: rgb(85, 170, 255);\n"
+            "	border: 0px solid;\n"
+            "}\n"
+            "QPushButton:hover {\n"
+            "	background-color: rgb(85, 170, 255);\n"
+            "}")
 
-        self.screen_relatorio  = Window_Form_Relatorio()
-        self.relatorios_functions   = Relatorios()
-        self.screen_relatorio.num_titulo_input.dateChanged.connect(self.relatorios_functions.handle_data_inicial)
-        self.screen_relatorio.descricao_input.dateChanged.connect(self.relatorios_functions.handle_data_final)
-        self.screen_relatorio.sub_button.clicked.connect(self.openfile_screen)
-        QApplication.restoreOverrideCursor()
-        self.screen_relatorio.dlg.exec_()
-
+            self.screen_relatorio  = Window_Form_Relatorio()
+            self.relatorios_functions   = Relatorios()
+            self.screen_relatorio.num_titulo_input.dateChanged.connect(self.relatorios_functions.handle_data_inicial)
+            self.screen_relatorio.descricao_input.dateChanged.connect(self.relatorios_functions.handle_data_final)
+            self.screen_relatorio.sub_button.clicked.connect(self.openfile_screen)
+            QApplication.restoreOverrideCursor()
+            self.screen_relatorio.dlg.exec_()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno)
+            texto = """[Error]: {}\n[Script]: {}\n[Line Error]: {}\n""".format(e, fname, exc_tb.tb_lineno)
+            Error_Box(texto)
     def openfile_screen(self):
         dialog = QFileDialog()
         dialog.setFilter(dialog.filter() | QtCore.QDir.Hidden)

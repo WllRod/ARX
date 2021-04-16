@@ -585,6 +585,8 @@ class Folha_Ponto_Function():
         return self.db.lists()
     
     def add_values(self, array, table):
+
+        print(array)
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         result  = {}
         array_temp  = []
