@@ -1,0 +1,10 @@
+{
+    "Connector": {
+        "Database": "u576971993_arx",
+        "Server": " sql461.main-hosting.eu",
+        "Port": "3306",
+        "User": "u576971993_arx",
+        "Password": "Arx123456"
+    },
+    "Update_Link": "http://e0w.com.br/updates/"
+}
