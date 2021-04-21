@@ -6,3 +6,4 @@ psutil==5.8.0
 PyQt5==5.15.4
 bcrypt
 python-dateutil
+pyinstaller

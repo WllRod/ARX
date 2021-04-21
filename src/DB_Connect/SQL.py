@@ -554,8 +554,12 @@ class Obras():
         query   = """
         INSERT INTO OBRAS (DESCRICAO, ID_FUNC, UNIQUE_KEY) 
             SELECT DESCRICAO, '{}', UNIQUE_KEY FROM OBRAS 
-        WHERE UNIQUE_KEY='{}'
-        """.format(id_func, id_obra)
+        WHERE UNIQUE_KEY='{}' AND NOT EXISTS (
+            SELECT ID_FUNC FROM OBRAS WHERE ID_FUNC='{}'
+        )
+            GROUP BY UNIQUE_KEY
+        """.format(id_func, id_obra, id_func)
+        print(query)
 
         try:
             self.db.set_data(query)
